@@ -21,28 +21,28 @@ type Transaction struct {
 	Date      time.Time
 }
 
-type transactionUsecase struct {
+type TransactionUsecase struct {
 	transactionRepo TransactionRepository
 }
 
-func NewTransactionUsecase(t TransactionRepository) *transactionUsecase {
-	return &transactionUsecase{
+func NewTransactionUsecase(t TransactionRepository) *TransactionUsecase {
+	return &TransactionUsecase{
 		transactionRepo: t,
 	}
 }
 
-func (t *transactionUsecase) FetchByWallet(walletID int) ([]Transaction, error) {
+func (t *TransactionUsecase) FetchByWallet(walletID int) ([]Transaction, error) {
 	return t.transactionRepo.FetchByWallet(walletID)
 }
 
-func (t *transactionUsecase) Store() {
+func (t *TransactionUsecase) Store() {
 	fmt.Println("transaction_usecase: store")
 }
 
-func (t *transactionUsecase) Update() {
+func (t *TransactionUsecase) Update() {
 	fmt.Println("transaction_usecase: update")
 }
 
-func (t *transactionUsecase) Delete() {
+func (t *TransactionUsecase) Delete() {
 	fmt.Println("transaction_usecase: delete")
 }

@@ -11,17 +11,17 @@ type Wallet struct {
 	Transactions []Transaction
 }
 
-type walletUsecase struct {
+type WalletUsecase struct {
 	walletRepo WalletRepository
 }
 
-func NewWalletUsecase(w WalletRepository) *walletUsecase {
-	return &walletUsecase{
+func NewWalletUsecase(w WalletRepository) *WalletUsecase {
+	return &WalletUsecase{
 		walletRepo: w,
 	}
 }
 
-func (wl *walletUsecase) Store(name string) error {
+func (wl *WalletUsecase) Store(name string) error {
 	// TODO: check if there's another wallet with the same name
 	name, err := wl.handleName(name)
 	if err != nil {
@@ -35,7 +35,7 @@ func (wl *walletUsecase) Store(name string) error {
 	return nil
 }
 
-func (wl *walletUsecase) Update(id int64, w Wallet) error {
+func (wl *WalletUsecase) Update(id int64, w Wallet) error {
 	name, err := wl.handleName(w.Name)
 	if err != nil {
 		return err
@@ -49,7 +49,7 @@ func (wl *walletUsecase) Update(id int64, w Wallet) error {
 	return nil
 }
 
-func (wl *walletUsecase) Delete(id int64) error {
+func (wl *WalletUsecase) Delete(id int64) error {
 	if err := wl.walletRepo.Delete(id); err != nil {
 		return err
 	}
@@ -57,11 +57,11 @@ func (wl *walletUsecase) Delete(id int64) error {
 	return nil
 }
 
-func (wl *walletUsecase) Fetch() ([]Wallet, error) {
+func (wl *WalletUsecase) Fetch() ([]Wallet, error) {
 	return wl.walletRepo.Fetch()
 }
 
-func (wl *walletUsecase) handleName(name string) (string, error) {
+func (wl *WalletUsecase) handleName(name string) (string, error) {
 	name = strings.TrimSpace(name)
 	if name == "" {
 		return "", fmt.Errorf("'name' cannot be null")
