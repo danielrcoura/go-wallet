@@ -1,7 +1,7 @@
 package core
 
 type TransactionRepository interface {
-	Fetch()
+	FetchByWallet(walletID int) ([]Transaction, error)
 	Store()
 	Update()
 	Delete()

@@ -31,6 +31,10 @@ func NewTransactionUsecase(t TransactionRepository) *transactionUsecase {
 	}
 }
 
+func (t *transactionUsecase) FetchByWallet(walletID int) ([]Transaction, error) {
+	return t.transactionRepo.FetchByWallet(walletID)
+}
+
 func (t *transactionUsecase) Store() {
 	fmt.Println("transaction_usecase: store")
 }
@@ -41,8 +45,4 @@ func (t *transactionUsecase) Update() {
 
 func (t *transactionUsecase) Delete() {
 	fmt.Println("transaction_usecase: delete")
-}
-
-func (t *transactionUsecase) Fetch() {
-	fmt.Println("transaction_usecase: fetch")
 }

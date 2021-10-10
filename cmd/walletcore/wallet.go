@@ -22,7 +22,8 @@ func NewWalletUsecase(w WalletRepository) *walletUsecase {
 }
 
 func (wl *walletUsecase) Store(name string) error {
-	name, err := handleName(name)
+	// TODO: check if there's another wallet with the same name
+	name, err := wl.handleName(name)
 	if err != nil {
 		return err
 	}
@@ -35,7 +36,7 @@ func (wl *walletUsecase) Store(name string) error {
 }
 
 func (wl *walletUsecase) Update(id int64, w Wallet) error {
-	name, err := handleName(w.Name)
+	name, err := wl.handleName(w.Name)
 	if err != nil {
 		return err
 	}
@@ -57,15 +58,10 @@ func (wl *walletUsecase) Delete(id int64) error {
 }
 
 func (wl *walletUsecase) Fetch() ([]Wallet, error) {
-	wallets, err := wl.walletRepo.Fetch()
-	if err != nil {
-		return nil, err
-	}
-
-	return wallets, nil
+	return wl.walletRepo.Fetch()
 }
 
-func handleName(name string) (string, error) {
+func (wl *walletUsecase) handleName(name string) (string, error) {
 	name = strings.TrimSpace(name)
 	if name == "" {
 		return "", fmt.Errorf("'name' cannot be null")

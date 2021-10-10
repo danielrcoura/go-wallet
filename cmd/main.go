@@ -1,18 +1,37 @@
 package main
 
 import (
-	core "github.com/danielrcoura/go-wallet/cmd/core"
+	"fmt"
+
 	infra "github.com/danielrcoura/go-wallet/cmd/mysql"
+	walletcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	walletMysql := infra.NewWalletMysql()
-	walletUsecase := core.NewWalletUsecase(walletMysql)
+	err := godotenv.Load()
+	if err != nil {
+		panic("Error loading .env file")
+	}
 
-	walletUsecase.Store("cripto")
+	db, err := infra.NewDB()
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
 
-	transactionMysql := infra.NewTransactionMysql()
-	transactionUsecase := core.NewTransactionUsecase(transactionMysql)
+	walletMysql := infra.NewWalletMysql(db)
+	walletUsecase := walletcore.NewWalletUsecase(walletMysql)
 
-	transactionUsecase.Store()
+	// err = walletUsecase.Store("cripto")
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	wallets, err := walletUsecase.Fetch()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(wallets)
 }

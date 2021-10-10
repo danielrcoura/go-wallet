@@ -1,23 +1,39 @@
 package infra
 
 import (
+	"database/sql"
 	"fmt"
 
-	"github.com/danielrcoura/go-wallet/cmd/core"
+	adapter "github.com/danielrcoura/go-wallet/cmd/adapters"
+	walletcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 )
 
-type walletMysql struct{}
+type walletMysql struct {
+	db *sql.DB
+}
 
-func NewWalletMysql() *walletMysql {
-	return &walletMysql{}
+func NewWalletMysql(db *sql.DB) *walletMysql {
+	return &walletMysql{
+		db: db,
+	}
 }
 
 func (wl *walletMysql) Store(name string) error {
-	fmt.Println("repository: store")
+	stmt, err := wl.db.Prepare("INSERT INTO wallets (name) VALUES (?)")
+	defer stmt.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(name)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func (wl *walletMysql) Update(id int64, w core.Wallet) error {
+func (wl *walletMysql) Update(id int64, w walletcore.Wallet) error {
 	fmt.Println("repository: update")
 	return nil
 }
@@ -27,7 +43,16 @@ func (wl *walletMysql) Delete(id int64) error {
 	return nil
 }
 
-func (wl *walletMysql) Fetch() ([]core.Wallet, error) {
-	fmt.Println("repository: fetch")
-	return nil, nil
+func (wl *walletMysql) Fetch() ([]walletcore.Wallet, error) {
+	r, err := wl.db.Query("SELECT * FROM wallets")
+	if err != nil {
+		return nil, err
+	}
+
+	wallets, err := adapter.RowsToWallets(r)
+	if err != nil {
+		return nil, err
+	}
+
+	return wallets, nil
 }
