@@ -8,7 +8,7 @@ import (
 var (
 	ErrInvalidWalletName   = errors.New("invalid_wallet_name")
 	ErrWalletAlreadyExists = errors.New("wallet_already_exists")
-	ErrWalletDoesNotExists = errors.New("wallet_does_not_exists")
+	ErrWalletNotFound      = errors.New("wallet_not_found")
 )
 
 type dbError struct {

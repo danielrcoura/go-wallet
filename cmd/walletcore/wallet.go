@@ -31,11 +31,21 @@ func NewWalletUsecase(w WalletRepository) *WalletUsecase {
 }
 
 func (wl *WalletUsecase) Fetch() ([]Wallet, error) {
-	return wl.walletRepo.Fetch()
+	wallets, err := wl.walletRepo.Fetch()
+	if err != nil {
+		return nil, NewDBError(err)
+	}
+
+	return wallets, nil
 }
 
 func (wl *WalletUsecase) FetchByID(id string) (*Wallet, error) {
-	return wl.walletRepo.FetchByID(id)
+	w, err := wl.walletRepo.FetchByID(id)
+	if err != nil {
+		return nil, NewDBError(err)
+	}
+
+	return w, nil
 }
 
 func (wl *WalletUsecase) Store(name string) error {
@@ -57,7 +67,7 @@ func (wl *WalletUsecase) Store(name string) error {
 
 	if err := wl.walletRepo.Store(name); err != nil {
 		log.Println(err)
-		return err
+		return NewDBError(err)
 	}
 
 	return nil
@@ -81,7 +91,7 @@ func (wl *WalletUsecase) Update(id int, w Wallet) error {
 	}
 
 	if err = wl.walletRepo.Update(id, w); err != nil {
-		return err
+		return NewDBError(err)
 	}
 
 	return nil
@@ -90,7 +100,7 @@ func (wl *WalletUsecase) Update(id int, w Wallet) error {
 func (wl *WalletUsecase) Delete(id int) error {
 	if err := wl.walletRepo.Delete(id); err != nil {
 		log.Println(err)
-		return err
+		return NewDBError(err)
 	}
 
 	return nil
@@ -107,8 +117,8 @@ func (wl *WalletUsecase) handleName(name string) (string, error) {
 
 func (wl *WalletUsecase) checkWalletExists(name string) (bool, error) {
 	w, err := wl.walletRepo.FetchByName(name)
-	if err != nil && IsdbError(err) {
-		return false, err
+	if err != nil {
+		return false, NewDBError(err)
 	}
 	return w != nil, nil
 }

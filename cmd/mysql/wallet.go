@@ -19,12 +19,12 @@ func NewWalletMysql(db *sql.DB) *walletMysql {
 func (wl *walletMysql) Fetch() ([]wcore.Wallet, error) {
 	r, err := wl.db.Query("SELECT * FROM wallets")
 	if err != nil {
-		return nil, wcore.NewDBError(err)
+		return nil, err
 	}
 
 	wallets, err := RowsToWallets(r)
 	if err != nil {
-		return nil, wcore.NewDBError(err)
+		return nil, err
 	}
 
 	return wallets, nil
@@ -33,16 +33,16 @@ func (wl *walletMysql) Fetch() ([]wcore.Wallet, error) {
 func (wl *walletMysql) FetchByID(id string) (*wcore.Wallet, error) {
 	r, err := wl.db.Query("SELECT * FROM wallets WHERE id=?", id)
 	if err != nil {
-		return nil, wcore.NewDBError(err)
+		return nil, err
 	}
 
 	wallets, err := RowsToWallets(r)
 	if err != nil {
-		return nil, wcore.NewDBError(err)
+		return nil, err
 	}
 
-	if len(wallets) < 1 {
-		return nil, wcore.ErrWalletDoesNotExists
+	if len(wallets) == 0 {
+		return nil, nil
 	}
 
 	return &wallets[0], nil
@@ -51,16 +51,16 @@ func (wl *walletMysql) FetchByID(id string) (*wcore.Wallet, error) {
 func (wl *walletMysql) FetchByName(name string) (*wcore.Wallet, error) {
 	r, err := wl.db.Query("SELECT * FROM wallets WHERE name=?", name)
 	if err != nil {
-		return nil, wcore.NewDBError(err)
+		return nil, err
 	}
 
 	wallets, err := RowsToWallets(r)
 	if err != nil {
-		return nil, wcore.NewDBError(err)
+		return nil, err
 	}
 
-	if len(wallets) < 1 {
-		return nil, wcore.ErrWalletDoesNotExists
+	if len(wallets) == 0 {
+		return nil, nil
 	}
 
 	return &wallets[0], nil
@@ -69,7 +69,7 @@ func (wl *walletMysql) FetchByName(name string) (*wcore.Wallet, error) {
 func (wl *walletMysql) Store(name string) error {
 	_, err := wl.db.Exec("INSERT INTO wallets (name) VALUES (?)", name)
 	if err != nil {
-		return wcore.NewDBError(err)
+		return err
 	}
 
 	return nil
@@ -78,7 +78,7 @@ func (wl *walletMysql) Store(name string) error {
 func (wl *walletMysql) Update(id int, w wcore.Wallet) error {
 	_, err := wl.db.Exec("UPDATE wallets SET name=? WHERE id=?", w.Name, id)
 	if err != nil {
-		return wcore.NewDBError(err)
+		return err
 	}
 
 	return nil
@@ -87,7 +87,7 @@ func (wl *walletMysql) Update(id int, w wcore.Wallet) error {
 func (wl *walletMysql) Delete(id int) error {
 	_, err := wl.db.Exec("DELETE FROM wallets WHERE id=?", id)
 	if err != nil {
-		return wcore.NewDBError(err)
+		return err
 	}
 
 	return nil
