@@ -15,6 +15,8 @@ type Wallet struct {
 
 type WalletRepository interface {
 	Fetch() ([]Wallet, error)
+	FetchByID(id string) (*Wallet, error)
+	FetchByName(name string) (*Wallet, error)
 	Store(name string) error
 	Update(id int64, w Wallet) error
 	Delete(id int64) error
@@ -30,8 +32,15 @@ func NewWalletUsecase(w WalletRepository) *WalletUsecase {
 	}
 }
 
+func (wl *WalletUsecase) Fetch() ([]Wallet, error) {
+	return wl.walletRepo.Fetch()
+}
+
+func (wl *WalletUsecase) FetchByID(id string) (*Wallet, error) {
+	return wl.walletRepo.FetchByID(id)
+}
+
 func (wl *WalletUsecase) Store(name string) error {
-	// TODO: check if there's another wallet with the same name
 	log.Printf("Creating wallet %s...\n", name)
 	name, err := wl.handleName(name)
 	if err != nil {
@@ -39,7 +48,17 @@ func (wl *WalletUsecase) Store(name string) error {
 		return err
 	}
 
+	exists, err := wl.checkWalletExists(name)
+	if err != nil {
+		log.Println(err)
+		return err
+	} else if exists {
+		log.Println(walleterror.ErrWalletAlreadyExists)
+		return walleterror.ErrWalletAlreadyExists
+	}
+
 	if err := wl.walletRepo.Store(name); err != nil {
+		log.Println(err)
 		return err
 	}
 
@@ -68,10 +87,6 @@ func (wl *WalletUsecase) Delete(id int64) error {
 	return nil
 }
 
-func (wl *WalletUsecase) Fetch() ([]Wallet, error) {
-	return wl.walletRepo.Fetch()
-}
-
 func (wl *WalletUsecase) handleName(name string) (string, error) {
 	name = strings.TrimSpace(name)
 	if name == "" {
@@ -79,4 +94,12 @@ func (wl *WalletUsecase) handleName(name string) (string, error) {
 	}
 
 	return name, nil
+}
+
+func (wl *WalletUsecase) checkWalletExists(name string) (bool, error) {
+	w, err := wl.walletRepo.FetchByName(name)
+	if err != nil && walleterror.IsdbError(err) {
+		return false, err
+	}
+	return w != nil, nil
 }

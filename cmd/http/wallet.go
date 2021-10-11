@@ -40,6 +40,9 @@ func (s *server) storeWallet(w http.ResponseWriter, r *http.Request) {
 		case walleterror.ErrInvalidWalletName.Error():
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(walleterror.ErrInvalidWalletName.Error()))
+		case walleterror.ErrWalletAlreadyExists.Error():
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(walleterror.ErrWalletAlreadyExists.Error()))
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 		}
