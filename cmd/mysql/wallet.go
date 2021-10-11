@@ -2,7 +2,6 @@ package infra
 
 import (
 	"database/sql"
-	"fmt"
 
 	adapter "github.com/danielrcoura/go-wallet/cmd/adapters"
 	walletcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
@@ -70,13 +69,7 @@ func (wl *walletMysql) FetchByName(name string) (*walletcore.Wallet, error) {
 }
 
 func (wl *walletMysql) Store(name string) error {
-	stmt, err := wl.db.Prepare("INSERT INTO wallets (name) VALUES (?)")
-	defer stmt.Close()
-	if err != nil {
-		return walleterror.NewDBError(err)
-	}
-
-	_, err = stmt.Exec(name)
+	_, err := wl.db.Exec("INSERT INTO wallets (name) VALUES (?)", name)
 	if err != nil {
 		return walleterror.NewDBError(err)
 	}
@@ -85,13 +78,7 @@ func (wl *walletMysql) Store(name string) error {
 }
 
 func (wl *walletMysql) Update(id int, w walletcore.Wallet) error {
-	stmt, err := wl.db.Prepare("UPDATE wallets SET name=? WHERE id=?")
-	defer stmt.Close()
-	if err != nil {
-		return walleterror.NewDBError(err)
-	}
-
-	_, err = stmt.Exec(w.Name, id)
+	_, err := wl.db.Exec("UPDATE wallets SET name=? WHERE id=?", w.Name, id)
 	if err != nil {
 		return walleterror.NewDBError(err)
 	}
@@ -100,6 +87,10 @@ func (wl *walletMysql) Update(id int, w walletcore.Wallet) error {
 }
 
 func (wl *walletMysql) Delete(id int) error {
-	fmt.Println("repository: delete")
+	_, err := wl.db.Exec("DELETE FROM wallets WHERE id=?", id)
+	if err != nil {
+		return walleterror.NewDBError(err)
+	}
+
 	return nil
 }

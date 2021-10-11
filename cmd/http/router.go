@@ -13,7 +13,7 @@ func (s *server) router() *mux.Router {
 	sub.HandleFunc("", s.fetchWallets).Methods(http.MethodGet)
 	sub.HandleFunc("", s.storeWallet).Methods(http.MethodPost)
 	sub.HandleFunc("/{id}", s.updateWallet).Methods(http.MethodPatch)
-	// sub.HandleFunc("/{id}", s.fetchWallets).Methods(http.MethodDelete)
+	sub.HandleFunc("/{id}", s.deleteWallet).Methods(http.MethodDelete)
 
 	// sub = r.PathPrefix("/wallets/{walletID}/transactions").Subrouter()
 	// sub.HandleFunc("/", s.fetchWallets).Methods(http.MethodGet)

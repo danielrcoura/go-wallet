@@ -68,9 +68,19 @@ func (wl *WalletUsecase) Store(name string) error {
 func (wl *WalletUsecase) Update(id int, w Wallet) error {
 	name, err := wl.handleName(w.Name)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	w.Name = name
+
+	exists, err := wl.checkWalletExists(name)
+	if err != nil {
+		log.Println(err)
+		return err
+	} else if exists {
+		log.Println(walleterror.ErrWalletAlreadyExists)
+		return walleterror.ErrWalletAlreadyExists
+	}
 
 	if err = wl.walletRepo.Update(id, w); err != nil {
 		return err
@@ -81,6 +91,7 @@ func (wl *WalletUsecase) Update(id int, w Wallet) error {
 
 func (wl *WalletUsecase) Delete(id int) error {
 	if err := wl.walletRepo.Delete(id); err != nil {
+		log.Println(err)
 		return err
 	}
 

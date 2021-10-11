@@ -6,7 +6,7 @@ POST http://localhost:3000/wallets
 content-type: application/json
 
 {
-    "name": "test"
+    "name": "criptos"
 }
 
 ### Update wallet
@@ -14,5 +14,8 @@ PATCH http://localhost:3000/wallets/1
 content-type: application/json
 
 {
-    "name": "qwer"
+    "name": "shitcoins"
 }
+
+### Delete wallet
+DELETE http://localhost:3000/wallets/1
