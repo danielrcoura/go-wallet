@@ -1,14 +1,22 @@
 package core
 
 import (
-	"fmt"
 	"strings"
+
+	walleterror "github.com/danielrcoura/go-wallet/cmd/walleterror"
 )
 
 type Wallet struct {
 	ID           int64
 	Name         string
 	Transactions []Transaction
+}
+
+type WalletRepository interface {
+	Fetch() ([]Wallet, error)
+	Store(name string) error
+	Update(id int64, w Wallet) error
+	Delete(id int64) error
 }
 
 type WalletUsecase struct {
@@ -64,7 +72,7 @@ func (wl *WalletUsecase) Fetch() ([]Wallet, error) {
 func (wl *WalletUsecase) handleName(name string) (string, error) {
 	name = strings.TrimSpace(name)
 	if name == "" {
-		return "", fmt.Errorf("'name' cannot be null")
+		return "", walleterror.ErrInvalidWalletName
 	}
 
 	return name, nil

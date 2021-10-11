@@ -21,6 +21,13 @@ type Transaction struct {
 	Date      time.Time
 }
 
+type TransactionRepository interface {
+	FetchByWallet(walletID int) ([]Transaction, error)
+	Store()
+	Update()
+	Delete()
+}
+
 type TransactionUsecase struct {
 	transactionRepo TransactionRepository
 }

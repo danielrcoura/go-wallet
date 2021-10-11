@@ -1,9 +1,8 @@
 package http
 
 import (
-	"net/http"
-
 	"encoding/json"
+	"net/http"
 )
 
 func (s *server) fetchWallets(w http.ResponseWriter, req *http.Request) {
