@@ -1,10 +1,9 @@
-package infra
+package mysql
 
 import (
 	"database/sql"
 	"fmt"
 
-	adapter "github.com/danielrcoura/go-wallet/cmd/adapters"
 	walletcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 )
 
@@ -29,7 +28,7 @@ func (t *transactionMysql) FetchByWallet(w int) ([]walletcore.Transaction, error
 		return nil, err
 	}
 
-	return adapter.RowsToTransactions(r)
+	return RowsToTransactions(r)
 }
 
 func (t *transactionMysql) Store() {

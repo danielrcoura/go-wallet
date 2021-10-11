@@ -4,7 +4,7 @@ import (
 	"log"
 
 	http "github.com/danielrcoura/go-wallet/cmd/http"
-	infra "github.com/danielrcoura/go-wallet/cmd/mysql"
+	mysql "github.com/danielrcoura/go-wallet/cmd/mysql"
 	walletcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 	"github.com/joho/godotenv"
 )
@@ -15,13 +15,13 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	db, err := infra.NewDB()
+	db, err := mysql.NewDB()
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	walletMysql := infra.NewWalletMysql(db)
+	walletMysql := mysql.NewWalletMysql(db)
 	walletUsecase := walletcore.NewWalletUsecase(walletMysql)
 
 	server := http.New(walletUsecase)

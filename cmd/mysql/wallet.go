@@ -1,9 +1,8 @@
-package infra
+package mysql
 
 import (
 	"database/sql"
 
-	adapter "github.com/danielrcoura/go-wallet/cmd/adapters"
 	walletcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 	"github.com/danielrcoura/go-wallet/cmd/walleterror"
 )
@@ -24,7 +23,7 @@ func (wl *walletMysql) Fetch() ([]walletcore.Wallet, error) {
 		return nil, walleterror.NewDBError(err)
 	}
 
-	wallets, err := adapter.RowsToWallets(r)
+	wallets, err := RowsToWallets(r)
 	if err != nil {
 		return nil, walleterror.NewDBError(err)
 	}
@@ -38,7 +37,7 @@ func (wl *walletMysql) FetchByID(id string) (*walletcore.Wallet, error) {
 		return nil, walleterror.NewDBError(err)
 	}
 
-	wallets, err := adapter.RowsToWallets(r)
+	wallets, err := RowsToWallets(r)
 	if err != nil {
 		return nil, walleterror.NewDBError(err)
 	}
@@ -56,7 +55,7 @@ func (wl *walletMysql) FetchByName(name string) (*walletcore.Wallet, error) {
 		return nil, walleterror.NewDBError(err)
 	}
 
-	wallets, err := adapter.RowsToWallets(r)
+	wallets, err := RowsToWallets(r)
 	if err != nil {
 		return nil, walleterror.NewDBError(err)
 	}
