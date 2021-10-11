@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	http "github.com/danielrcoura/go-wallet/cmd/http"
 	infra "github.com/danielrcoura/go-wallet/cmd/mysql"
 	walletcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
@@ -10,12 +12,12 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		panic("Error loading .env file")
+		log.Fatal("Error loading .env file")
 	}
 
 	db, err := infra.NewDB()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defer db.Close()
 
@@ -23,5 +25,8 @@ func main() {
 	walletUsecase := walletcore.NewWalletUsecase(walletMysql)
 
 	server := http.New(walletUsecase)
-	server.ListenAndServe()
+	log.Println("Starting server...")
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatal(err)
+	}
 }

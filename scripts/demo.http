@@ -1,3 +1,10 @@
-# Get wallets
-GET http://localhost:8080/wallets
+### Get wallets
+GET http://localhost:3000/wallets
 
+### Create wallet
+POST http://localhost:3000/wallets
+content-type: application/json
+
+{
+    "name": "test"
+}

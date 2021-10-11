@@ -1,6 +1,7 @@
 package core
 
 import (
+	"log"
 	"strings"
 
 	walleterror "github.com/danielrcoura/go-wallet/cmd/walleterror"
@@ -31,8 +32,10 @@ func NewWalletUsecase(w WalletRepository) *WalletUsecase {
 
 func (wl *WalletUsecase) Store(name string) error {
 	// TODO: check if there's another wallet with the same name
+	log.Printf("Creating wallet %s...\n", name)
 	name, err := wl.handleName(name)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 
