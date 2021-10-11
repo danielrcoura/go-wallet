@@ -17,8 +17,8 @@ func New(walletUsecase *walletcore.WalletUsecase) *server {
 }
 
 func (s *server) ListenAndServe() error {
-	s.router()
-	if err := http.ListenAndServe(":3000", nil); err != nil {
+	r := s.router()
+	if err := http.ListenAndServe(":3000", r); err != nil {
 		return err
 	}
 	return nil

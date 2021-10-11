@@ -13,7 +13,7 @@ const (
 )
 
 type Transaction struct {
-	ID        int64
+	ID        int
 	Ticker    string
 	Operation Operation
 	Quantity  float64

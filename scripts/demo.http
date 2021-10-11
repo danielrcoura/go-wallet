@@ -8,3 +8,11 @@ content-type: application/json
 {
     "name": "test"
 }
+
+### Update wallet
+PATCH http://localhost:3000/wallets/1
+content-type: application/json
+
+{
+    "name": "qwer"
+}

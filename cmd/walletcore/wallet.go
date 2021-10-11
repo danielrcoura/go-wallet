@@ -8,7 +8,7 @@ import (
 )
 
 type Wallet struct {
-	ID           int64
+	ID           int
 	Name         string
 	Transactions []Transaction
 }
@@ -18,8 +18,8 @@ type WalletRepository interface {
 	FetchByID(id string) (*Wallet, error)
 	FetchByName(name string) (*Wallet, error)
 	Store(name string) error
-	Update(id int64, w Wallet) error
-	Delete(id int64) error
+	Update(id int, w Wallet) error
+	Delete(id int) error
 }
 
 type WalletUsecase struct {
@@ -65,7 +65,7 @@ func (wl *WalletUsecase) Store(name string) error {
 	return nil
 }
 
-func (wl *WalletUsecase) Update(id int64, w Wallet) error {
+func (wl *WalletUsecase) Update(id int, w Wallet) error {
 	name, err := wl.handleName(w.Name)
 	if err != nil {
 		return err
@@ -79,7 +79,7 @@ func (wl *WalletUsecase) Update(id int64, w Wallet) error {
 	return nil
 }
 
-func (wl *WalletUsecase) Delete(id int64) error {
+func (wl *WalletUsecase) Delete(id int) error {
 	if err := wl.walletRepo.Delete(id); err != nil {
 		return err
 	}

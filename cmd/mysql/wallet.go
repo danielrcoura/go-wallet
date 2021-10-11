@@ -22,12 +22,12 @@ func NewWalletMysql(db *sql.DB) *walletMysql {
 func (wl *walletMysql) Fetch() ([]walletcore.Wallet, error) {
 	r, err := wl.db.Query("SELECT * FROM wallets")
 	if err != nil {
-		return nil, err
+		return nil, walleterror.NewDBError(err)
 	}
 
 	wallets, err := adapter.RowsToWallets(r)
 	if err != nil {
-		return nil, err
+		return nil, walleterror.NewDBError(err)
 	}
 
 	return wallets, nil
@@ -36,12 +36,12 @@ func (wl *walletMysql) Fetch() ([]walletcore.Wallet, error) {
 func (wl *walletMysql) FetchByID(id string) (*walletcore.Wallet, error) {
 	r, err := wl.db.Query("SELECT * FROM wallets WHERE id=?", id)
 	if err != nil {
-		return nil, err
+		return nil, walleterror.NewDBError(err)
 	}
 
 	wallets, err := adapter.RowsToWallets(r)
 	if err != nil {
-		return nil, err
+		return nil, walleterror.NewDBError(err)
 	}
 
 	if len(wallets) < 1 {
@@ -73,23 +73,33 @@ func (wl *walletMysql) Store(name string) error {
 	stmt, err := wl.db.Prepare("INSERT INTO wallets (name) VALUES (?)")
 	defer stmt.Close()
 	if err != nil {
-		return err
+		return walleterror.NewDBError(err)
 	}
 
 	_, err = stmt.Exec(name)
 	if err != nil {
-		return err
+		return walleterror.NewDBError(err)
 	}
 
 	return nil
 }
 
-func (wl *walletMysql) Update(id int64, w walletcore.Wallet) error {
-	fmt.Println("repository: update")
+func (wl *walletMysql) Update(id int, w walletcore.Wallet) error {
+	stmt, err := wl.db.Prepare("UPDATE wallets SET name=? WHERE id=?")
+	defer stmt.Close()
+	if err != nil {
+		return walleterror.NewDBError(err)
+	}
+
+	_, err = stmt.Exec(w.Name, id)
+	if err != nil {
+		return walleterror.NewDBError(err)
+	}
+
 	return nil
 }
 
-func (wl *walletMysql) Delete(id int64) error {
+func (wl *walletMysql) Delete(id int) error {
 	fmt.Println("repository: delete")
 	return nil
 }
