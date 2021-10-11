@@ -1,10 +1,8 @@
-package core
+package wcore
 
 import (
 	"log"
 	"strings"
-
-	walleterror "github.com/danielrcoura/go-wallet/cmd/walleterror"
 )
 
 type Wallet struct {
@@ -53,8 +51,8 @@ func (wl *WalletUsecase) Store(name string) error {
 		log.Println(err)
 		return err
 	} else if exists {
-		log.Println(walleterror.ErrWalletAlreadyExists)
-		return walleterror.ErrWalletAlreadyExists
+		log.Println(ErrWalletAlreadyExists)
+		return ErrWalletAlreadyExists
 	}
 
 	if err := wl.walletRepo.Store(name); err != nil {
@@ -78,8 +76,8 @@ func (wl *WalletUsecase) Update(id int, w Wallet) error {
 		log.Println(err)
 		return err
 	} else if exists {
-		log.Println(walleterror.ErrWalletAlreadyExists)
-		return walleterror.ErrWalletAlreadyExists
+		log.Println(ErrWalletAlreadyExists)
+		return ErrWalletAlreadyExists
 	}
 
 	if err = wl.walletRepo.Update(id, w); err != nil {
@@ -101,7 +99,7 @@ func (wl *WalletUsecase) Delete(id int) error {
 func (wl *WalletUsecase) handleName(name string) (string, error) {
 	name = strings.TrimSpace(name)
 	if name == "" {
-		return "", walleterror.ErrInvalidWalletName
+		return "", ErrInvalidWalletName
 	}
 
 	return name, nil
@@ -109,7 +107,7 @@ func (wl *WalletUsecase) handleName(name string) (string, error) {
 
 func (wl *WalletUsecase) checkWalletExists(name string) (bool, error) {
 	w, err := wl.walletRepo.FetchByName(name)
-	if err != nil && walleterror.IsdbError(err) {
+	if err != nil && IsdbError(err) {
 		return false, err
 	}
 	return w != nil, nil

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/danielrcoura/go-wallet/cmd/walleterror"
+	wcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 	"github.com/gorilla/mux"
 )
 
@@ -39,12 +39,12 @@ func (s *server) storeWallet(w http.ResponseWriter, r *http.Request) {
 
 	if err := s.walletUsecase.Store(wReq.Name); err != nil {
 		switch err.Error() {
-		case walleterror.ErrInvalidWalletName.Error():
+		case wcore.ErrInvalidWalletName.Error():
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(walleterror.ErrInvalidWalletName.Error()))
-		case walleterror.ErrWalletAlreadyExists.Error():
+			w.Write([]byte(wcore.ErrInvalidWalletName.Error()))
+		case wcore.ErrWalletAlreadyExists.Error():
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(walleterror.ErrWalletAlreadyExists.Error()))
+			w.Write([]byte(wcore.ErrWalletAlreadyExists.Error()))
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 		}
@@ -73,12 +73,12 @@ func (s *server) updateWallet(w http.ResponseWriter, r *http.Request) {
 
 	if err := s.walletUsecase.Update(id, wallet); err != nil {
 		switch err.Error() {
-		case walleterror.ErrInvalidWalletName.Error():
+		case wcore.ErrInvalidWalletName.Error():
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(walleterror.ErrInvalidWalletName.Error()))
-		case walleterror.ErrWalletAlreadyExists.Error():
+			w.Write([]byte(wcore.ErrInvalidWalletName.Error()))
+		case wcore.ErrWalletAlreadyExists.Error():
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(walleterror.ErrWalletAlreadyExists.Error()))
+			w.Write([]byte(wcore.ErrWalletAlreadyExists.Error()))
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 		}

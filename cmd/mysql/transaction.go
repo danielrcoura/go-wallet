@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	walletcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
+	wcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 )
 
 type transactionMysql struct {
@@ -17,7 +17,7 @@ func NewTransactionMysql(db *sql.DB) *transactionMysql {
 	}
 }
 
-func (t *transactionMysql) FetchByWallet(w int) ([]walletcore.Transaction, error) {
+func (t *transactionMysql) FetchByWallet(w int) ([]wcore.Transaction, error) {
 	stmt, err := t.db.Prepare("SELECT * FROM transactions WHERE wallet_id=?")
 	if err != nil {
 		return nil, err

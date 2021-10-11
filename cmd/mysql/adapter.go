@@ -3,14 +3,14 @@ package mysql
 import (
 	"database/sql"
 
-	walletcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
+	wcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 )
 
-func RowsToWallets(r *sql.Rows) ([]walletcore.Wallet, error) {
-	wallets := []walletcore.Wallet{}
+func RowsToWallets(r *sql.Rows) ([]wcore.Wallet, error) {
+	wallets := []wcore.Wallet{}
 
 	for r.Next() {
-		w := walletcore.Wallet{}
+		w := wcore.Wallet{}
 		err := r.Scan(&w.ID, &w.Name)
 		if err != nil {
 			return nil, err
@@ -21,13 +21,13 @@ func RowsToWallets(r *sql.Rows) ([]walletcore.Wallet, error) {
 	return wallets, nil
 }
 
-func RowsToTransactions(r *sql.Rows) ([]walletcore.Transaction, error) {
-	transactions := []walletcore.Transaction{}
+func RowsToTransactions(r *sql.Rows) ([]wcore.Transaction, error) {
+	transactions := []wcore.Transaction{}
 
 	// TODO: change Operation to enum
 	// TODO: change Date to time
 	for r.Next() {
-		t := walletcore.Transaction{}
+		t := wcore.Transaction{}
 		err := r.Scan(&t.ID, nil, &t.Ticker, &t.Operation, &t.Quantity, &t.Price, &t.Date)
 		if err != nil {
 			return nil, err

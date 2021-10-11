@@ -1,4 +1,4 @@
-package walleterror
+package wcore
 
 import (
 	"errors"

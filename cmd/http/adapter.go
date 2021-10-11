@@ -1,11 +1,11 @@
 package http
 
 import (
-	walletcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
+	wcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 )
 
-func walletReqToWallet(wReq walletReq) walletcore.Wallet {
-	return walletcore.Wallet{
+func walletReqToWallet(wReq walletReq) wcore.Wallet {
+	return wcore.Wallet{
 		Name: wReq.Name,
 	}
 }

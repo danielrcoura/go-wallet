@@ -1,4 +1,4 @@
-package core
+package wcore
 
 import (
 	"fmt"

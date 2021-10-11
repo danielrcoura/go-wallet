@@ -3,14 +3,14 @@ package http
 import (
 	"net/http"
 
-	walletcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
+	wcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 )
 
 type server struct {
-	walletUsecase *walletcore.WalletUsecase
+	walletUsecase *wcore.WalletUsecase
 }
 
-func New(walletUsecase *walletcore.WalletUsecase) *server {
+func New(walletUsecase *wcore.WalletUsecase) *server {
 	return &server{
 		walletUsecase: walletUsecase,
 	}

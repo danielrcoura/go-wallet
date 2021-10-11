@@ -3,8 +3,7 @@ package mysql
 import (
 	"database/sql"
 
-	walletcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
-	"github.com/danielrcoura/go-wallet/cmd/walleterror"
+	wcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 )
 
 type walletMysql struct {
@@ -17,51 +16,51 @@ func NewWalletMysql(db *sql.DB) *walletMysql {
 	}
 }
 
-func (wl *walletMysql) Fetch() ([]walletcore.Wallet, error) {
+func (wl *walletMysql) Fetch() ([]wcore.Wallet, error) {
 	r, err := wl.db.Query("SELECT * FROM wallets")
 	if err != nil {
-		return nil, walleterror.NewDBError(err)
+		return nil, wcore.NewDBError(err)
 	}
 
 	wallets, err := RowsToWallets(r)
 	if err != nil {
-		return nil, walleterror.NewDBError(err)
+		return nil, wcore.NewDBError(err)
 	}
 
 	return wallets, nil
 }
 
-func (wl *walletMysql) FetchByID(id string) (*walletcore.Wallet, error) {
+func (wl *walletMysql) FetchByID(id string) (*wcore.Wallet, error) {
 	r, err := wl.db.Query("SELECT * FROM wallets WHERE id=?", id)
 	if err != nil {
-		return nil, walleterror.NewDBError(err)
+		return nil, wcore.NewDBError(err)
 	}
 
 	wallets, err := RowsToWallets(r)
 	if err != nil {
-		return nil, walleterror.NewDBError(err)
+		return nil, wcore.NewDBError(err)
 	}
 
 	if len(wallets) < 1 {
-		return nil, walleterror.ErrWalletDoesNotExists
+		return nil, wcore.ErrWalletDoesNotExists
 	}
 
 	return &wallets[0], nil
 }
 
-func (wl *walletMysql) FetchByName(name string) (*walletcore.Wallet, error) {
+func (wl *walletMysql) FetchByName(name string) (*wcore.Wallet, error) {
 	r, err := wl.db.Query("SELECT * FROM wallets WHERE name=?", name)
 	if err != nil {
-		return nil, walleterror.NewDBError(err)
+		return nil, wcore.NewDBError(err)
 	}
 
 	wallets, err := RowsToWallets(r)
 	if err != nil {
-		return nil, walleterror.NewDBError(err)
+		return nil, wcore.NewDBError(err)
 	}
 
 	if len(wallets) < 1 {
-		return nil, walleterror.ErrWalletDoesNotExists
+		return nil, wcore.ErrWalletDoesNotExists
 	}
 
 	return &wallets[0], nil
@@ -70,16 +69,16 @@ func (wl *walletMysql) FetchByName(name string) (*walletcore.Wallet, error) {
 func (wl *walletMysql) Store(name string) error {
 	_, err := wl.db.Exec("INSERT INTO wallets (name) VALUES (?)", name)
 	if err != nil {
-		return walleterror.NewDBError(err)
+		return wcore.NewDBError(err)
 	}
 
 	return nil
 }
 
-func (wl *walletMysql) Update(id int, w walletcore.Wallet) error {
+func (wl *walletMysql) Update(id int, w wcore.Wallet) error {
 	_, err := wl.db.Exec("UPDATE wallets SET name=? WHERE id=?", w.Name, id)
 	if err != nil {
-		return walleterror.NewDBError(err)
+		return wcore.NewDBError(err)
 	}
 
 	return nil
@@ -88,7 +87,7 @@ func (wl *walletMysql) Update(id int, w walletcore.Wallet) error {
 func (wl *walletMysql) Delete(id int) error {
 	_, err := wl.db.Exec("DELETE FROM wallets WHERE id=?", id)
 	if err != nil {
-		return walleterror.NewDBError(err)
+		return wcore.NewDBError(err)
 	}
 
 	return nil
