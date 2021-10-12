@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"strings"
 
 	wcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 	"github.com/gorilla/mux"
@@ -23,18 +22,13 @@ func (s *server) fetchTransactions(w http.ResponseWriter, r *http.Request) {
 
 	wID, err := strconv.Atoi(vars[WALLET_ID])
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		sendCustomHttpError(w, wcore.ErrWalletNotFound)
 		return
 	}
 
 	transactions, err := s.transactionUsecase.FetchByWallet(wID)
 	if err != nil {
-		switch err.Error() {
-		case wcore.ErrWalletNotFound.Error():
-			WriteBadRequest(w, wcore.ErrWalletNotFound, http.StatusNotFound)
-		default:
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		sendCustomHttpError(w, err)
 		return
 	}
 
@@ -52,7 +46,7 @@ func (s *server) storeTransaction(w http.ResponseWriter, r *http.Request) {
 
 	wID, err := strconv.Atoi(vars[WALLET_ID])
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		sendCustomHttpError(w, wcore.ErrWalletNotFound)
 		return
 	}
 
@@ -65,18 +59,12 @@ func (s *server) storeTransaction(w http.ResponseWriter, r *http.Request) {
 
 	t, err := transactionReqToTransaction(tReq)
 	if err != nil {
-		WriteBadRequest(w, err, 0)
+		sendCustomHttpError(w, err)
 		return
 	}
 
 	if err := s.transactionUsecase.Store(wID, t); err != nil {
-		if strings.HasPrefix(err.Error(), "invalid") {
-			WriteBadRequest(w, err, 0)
-		} else if err.Error() == wcore.ErrWalletNotFound.Error() {
-			WriteBadRequest(w, wcore.ErrWalletNotFound, http.StatusNotFound)
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		sendCustomHttpError(w, err)
 		return
 	}
 
@@ -88,7 +76,7 @@ func (s *server) updateTransaction(w http.ResponseWriter, r *http.Request) {
 
 	tID, err := strconv.Atoi(vars[TRANSACTION_ID])
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		sendCustomHttpError(w, wcore.ErrTransactionNotFound)
 		return
 	}
 
@@ -101,18 +89,12 @@ func (s *server) updateTransaction(w http.ResponseWriter, r *http.Request) {
 
 	t, err := transactionReqToTransaction(tReq)
 	if err != nil {
-		WriteBadRequest(w, err, 0)
+		sendCustomHttpError(w, err)
 		return
 	}
 
 	if err := s.transactionUsecase.Update(tID, t); err != nil {
-		if strings.HasPrefix(err.Error(), "invalid") {
-			WriteBadRequest(w, err, 0)
-		} else if err.Error() == wcore.ErrTransactionNotFound.Error() {
-			WriteBadRequest(w, wcore.ErrTransactionNotFound, http.StatusNotFound)
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		sendCustomHttpError(w, err)
 		return
 	}
 }
@@ -122,16 +104,12 @@ func (s *server) deleteTransaction(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(vars[TRANSACTION_ID])
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		sendCustomHttpError(w, wcore.ErrTransactionNotFound)
 		return
 	}
 
 	if err := s.transactionUsecase.Delete(id); err != nil {
-		if err.Error() == wcore.ErrTransactionNotFound.Error() {
-			WriteBadRequest(w, wcore.ErrTransactionNotFound, http.StatusNotFound)
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		sendCustomHttpError(w, err)
 		return
 	}
 }

@@ -16,7 +16,7 @@ type walletReq struct {
 func (s *server) fetchWallets(w http.ResponseWriter, r *http.Request) {
 	wallets, err := s.walletUsecase.Fetch()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		sendCustomHttpError(w, err)
 		return
 	}
 
@@ -38,14 +38,7 @@ func (s *server) storeWallet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := s.walletUsecase.Store(wReq.Name); err != nil {
-		switch err.Error() {
-		case wcore.ErrInvalidWalletName.Error():
-			WriteBadRequest(w, wcore.ErrInvalidWalletName, 0)
-		case wcore.ErrWalletAlreadyExists.Error():
-			WriteBadRequest(w, wcore.ErrWalletAlreadyExists, 0)
-		default:
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		sendCustomHttpError(w, err)
 		return
 	}
 
@@ -57,7 +50,7 @@ func (s *server) updateWallet(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(vars[WALLET_ID])
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		sendCustomHttpError(w, wcore.ErrWalletNotFound)
 		return
 	}
 
@@ -71,16 +64,7 @@ func (s *server) updateWallet(w http.ResponseWriter, r *http.Request) {
 	wallet := walletReqToWallet(wReq)
 
 	if err := s.walletUsecase.Update(id, wallet); err != nil {
-		switch err.Error() {
-		case wcore.ErrInvalidWalletName.Error():
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(wcore.ErrInvalidWalletName.Error()))
-		case wcore.ErrWalletAlreadyExists.Error():
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(wcore.ErrWalletAlreadyExists.Error()))
-		default:
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		sendCustomHttpError(w, err)
 		return
 	}
 }
@@ -90,11 +74,11 @@ func (s *server) deleteWallet(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(vars[WALLET_ID])
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		sendCustomHttpError(w, wcore.ErrWalletNotFound)
 		return
 	}
 
 	if err := s.walletUsecase.Delete(id); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		sendCustomHttpError(w, err)
 	}
 }

@@ -47,11 +47,11 @@ PATCH http://localhost:3000/wallets/15/transactions/3
 content-type: application/json
 
 {
-    "ticker": "",
+    "ticker": "eth",
     "operation": "",
     "quantity": 0,
-    "price": 1,
-    "date": "2015-12-13T12:46:27Z"
+    "price": 0,
+    "date": ""
 }
 
 ### Delete transaction
