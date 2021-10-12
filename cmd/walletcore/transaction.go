@@ -53,16 +53,22 @@ type TransactionRepository interface {
 
 type TransactionUsecase struct {
 	transactionRepo TransactionRepository
+	walletUsecase   *WalletUsecase
 }
 
-func NewTransactionUsecase(t TransactionRepository) *TransactionUsecase {
+func NewTransactionUsecase(t TransactionRepository, w *WalletUsecase) *TransactionUsecase {
 	return &TransactionUsecase{
 		transactionRepo: t,
+		walletUsecase:   w,
 	}
 }
 
 func (tu *TransactionUsecase) FetchByWallet(walletID int) ([]Transaction, error) {
-	// TODO: wallet not found
+	_, err := tu.walletUsecase.FetchByID(walletID)
+	if err != nil {
+		return nil, err
+	}
+
 	transactions, err := tu.transactionRepo.FetchByWallet(walletID)
 	if err != nil {
 		log.Print(err)
@@ -73,6 +79,11 @@ func (tu *TransactionUsecase) FetchByWallet(walletID int) ([]Transaction, error)
 }
 
 func (tu *TransactionUsecase) Store(walletID int, transaction Transaction) error {
+	_, err := tu.walletUsecase.FetchByID(walletID)
+	if err != nil {
+		return err
+	}
+
 	// TODO: validate
 	if err := tu.transactionRepo.Store(walletID, transaction); err != nil {
 		log.Print(err)

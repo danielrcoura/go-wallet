@@ -25,7 +25,7 @@ func main() {
 	walletUsecase := wcore.NewWalletUsecase(walletMysql)
 
 	transactionMysql := mysql.NewTransactionMysql(db)
-	transactionUsecase := wcore.NewTransactionUsecase(transactionMysql)
+	transactionUsecase := wcore.NewTransactionUsecase(transactionMysql, walletUsecase)
 
 	log.Println("Starting server...")
 	server := http.New(walletUsecase, transactionUsecase)

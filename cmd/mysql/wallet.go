@@ -30,7 +30,7 @@ func (wl *walletMysql) Fetch() ([]wcore.Wallet, error) {
 	return wallets, nil
 }
 
-func (wl *walletMysql) FetchByID(id string) (*wcore.Wallet, error) {
+func (wl *walletMysql) FetchByID(id int) (*wcore.Wallet, error) {
 	r, err := wl.db.Query("SELECT * FROM wallets WHERE id=?", id)
 	if err != nil {
 		return nil, err

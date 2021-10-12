@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	wcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 	"github.com/gorilla/mux"
 )
 
@@ -27,7 +28,12 @@ func (s *server) fetchTransactions(w http.ResponseWriter, r *http.Request) {
 
 	transactions, err := s.transactionUsecase.FetchByWallet(wID)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		switch err.Error() {
+		case wcore.ErrWalletNotFound.Error():
+			WriteBadRequest(w, wcore.ErrWalletNotFound, http.StatusNotFound)
+		default:
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -63,7 +69,12 @@ func (s *server) storeTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := s.transactionUsecase.Store(wID, t); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		switch err.Error() {
+		case wcore.ErrWalletNotFound.Error():
+			WriteBadRequest(w, wcore.ErrWalletNotFound, http.StatusNotFound)
+		default:
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 		return
 	}
 

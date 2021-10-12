@@ -12,7 +12,7 @@ type Wallet struct {
 
 type WalletRepository interface {
 	Fetch() ([]Wallet, error)
-	FetchByID(id string) (*Wallet, error)
+	FetchByID(id int) (*Wallet, error)
 	FetchByName(name string) (*Wallet, error)
 	Store(name string) error
 	Update(id int, w Wallet) error
@@ -38,10 +38,14 @@ func (wl *WalletUsecase) Fetch() ([]Wallet, error) {
 	return wallets, nil
 }
 
-func (wl *WalletUsecase) FetchByID(id string) (*Wallet, error) {
+func (wl *WalletUsecase) FetchByID(id int) (*Wallet, error) {
 	w, err := wl.walletRepo.FetchByID(id)
 	if err != nil {
+		log.Println(err)
 		return nil, NewDBError(err)
+	} else if w == nil {
+		log.Println(ErrWalletNotFound)
+		return nil, ErrWalletNotFound
 	}
 
 	return w, nil

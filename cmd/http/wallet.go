@@ -40,9 +40,9 @@ func (s *server) storeWallet(w http.ResponseWriter, r *http.Request) {
 	if err := s.walletUsecase.Store(wReq.Name); err != nil {
 		switch err.Error() {
 		case wcore.ErrInvalidWalletName.Error():
-			WriteBadRequestMsg(w, wcore.ErrInvalidWalletName)
+			WriteBadRequest(w, wcore.ErrInvalidWalletName, 0)
 		case wcore.ErrWalletAlreadyExists.Error():
-			WriteBadRequestMsg(w, wcore.ErrWalletAlreadyExists)
+			WriteBadRequest(w, wcore.ErrWalletAlreadyExists, 0)
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 		}
