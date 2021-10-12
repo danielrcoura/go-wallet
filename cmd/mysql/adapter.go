@@ -24,11 +24,9 @@ func RowsToWallets(r *sql.Rows) ([]wcore.Wallet, error) {
 func RowsToTransactions(r *sql.Rows) ([]wcore.Transaction, error) {
 	transactions := []wcore.Transaction{}
 
-	// TODO: change Operation to enum
-	// TODO: change Date to time
 	for r.Next() {
 		t := wcore.Transaction{}
-		err := r.Scan(&t.ID, nil, &t.Ticker, &t.Operation, &t.Quantity, &t.Price, &t.Date)
+		err := r.Scan(&t.ID, &t.Ticker, &t.Operation, &t.Quantity, &t.Price, &t.Date)
 		if err != nil {
 			return nil, err
 		}

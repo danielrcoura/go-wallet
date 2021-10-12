@@ -24,8 +24,11 @@ func main() {
 	walletMysql := mysql.NewWalletMysql(db)
 	walletUsecase := wcore.NewWalletUsecase(walletMysql)
 
+	transactionMysql := mysql.NewTransactionMysql(db)
+	transactionUsecase := wcore.NewTransactionUsecase(transactionMysql)
+
 	log.Println("Starting server...")
-	server := http.New(walletUsecase)
+	server := http.New(walletUsecase, transactionUsecase)
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}

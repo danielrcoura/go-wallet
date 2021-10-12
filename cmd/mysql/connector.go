@@ -12,7 +12,7 @@ func NewDB() (*sql.DB, error) {
 	db, err := sql.Open(
 		"mysql",
 		fmt.Sprintf(
-			"%s:%s@tcp(%s:3306)/%s",
+			"%s:%s@tcp(%s:3306)/%s?parseTime=true",
 			os.Getenv("DB_USER"),
 			os.Getenv("DB_PASSWORD"),
 			os.Getenv("DB_ADDR"),

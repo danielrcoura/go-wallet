@@ -7,12 +7,17 @@ import (
 )
 
 type server struct {
-	walletUsecase *wcore.WalletUsecase
+	walletUsecase      *wcore.WalletUsecase
+	transactionUsecase *wcore.TransactionUsecase
 }
 
-func New(walletUsecase *wcore.WalletUsecase) *server {
+func New(
+	walletUsecase *wcore.WalletUsecase,
+	transactionUsecase *wcore.TransactionUsecase,
+) *server {
 	return &server{
-		walletUsecase: walletUsecase,
+		walletUsecase:      walletUsecase,
+		transactionUsecase: transactionUsecase,
 	}
 }
 

@@ -6,9 +6,8 @@ import (
 )
 
 type Wallet struct {
-	ID           int
-	Name         string
-	Transactions []Transaction
+	ID   int
+	Name string
 }
 
 type WalletRepository interface {
@@ -90,6 +89,8 @@ func (wl *WalletUsecase) Update(id int, w Wallet) error {
 		return ErrWalletAlreadyExists
 	}
 
+	// TODO: wallet not found
+
 	if err = wl.walletRepo.Update(id, w); err != nil {
 		return NewDBError(err)
 	}
@@ -98,6 +99,8 @@ func (wl *WalletUsecase) Update(id int, w Wallet) error {
 }
 
 func (wl *WalletUsecase) Delete(id int) error {
+	// TODO: wallet not found
+
 	if err := wl.walletRepo.Delete(id); err != nil {
 		log.Println(err)
 		return NewDBError(err)

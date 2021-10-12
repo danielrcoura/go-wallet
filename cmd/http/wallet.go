@@ -48,6 +48,8 @@ func (s *server) storeWallet(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (s *server) updateWallet(w http.ResponseWriter, r *http.Request) {

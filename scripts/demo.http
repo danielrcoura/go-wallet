@@ -1,3 +1,6 @@
+# If you're using VSCode, you can use the "REST Client"
+# plugin to send the following requests
+
 ### Get wallets
 GET http://localhost:3000/wallets
 
@@ -19,3 +22,23 @@ content-type: application/json
 
 ### Delete wallet
 DELETE http://localhost:3000/wallets/1
+
+
+# ====================================================
+
+
+### Get transactions
+GET http://localhost:3000/wallets/15/transactions
+
+### Create transaction
+POST http://localhost:3000/wallets/15/transactions
+content-type: application/json
+
+{
+    "ticker": "btc",
+    "operation": "sell",
+    "quantity": 1.2345,
+    "price": 50000,
+    "date": "2014-11-12T11:45:26.371Z"
+}
+

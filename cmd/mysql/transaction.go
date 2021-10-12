@@ -17,13 +17,10 @@ func NewTransactionMysql(db *sql.DB) *transactionMysql {
 	}
 }
 
-func (t *transactionMysql) FetchByWallet(w int) ([]wcore.Transaction, error) {
-	stmt, err := t.db.Prepare("SELECT * FROM transactions WHERE wallet_id=?")
-	if err != nil {
-		return nil, err
-	}
-
-	r, err := stmt.Query(w)
+func (t *transactionMysql) FetchByWallet(walletID int) ([]wcore.Transaction, error) {
+	r, err := t.db.Query(`SELECT id, ticker, operation, quantity, price, date 
+	                      FROM transactions
+						  WHERE wallet_id=?`, walletID)
 	if err != nil {
 		return nil, err
 	}
@@ -31,8 +28,23 @@ func (t *transactionMysql) FetchByWallet(w int) ([]wcore.Transaction, error) {
 	return RowsToTransactions(r)
 }
 
-func (t *transactionMysql) Store() {
-	fmt.Println("transaction_repository: store")
+func (t *transactionMysql) Store(walletID int, transaction wcore.Transaction) error {
+	data := []interface{}{
+		walletID,
+		transaction.Ticker,
+		transaction.Operation,
+		transaction.Quantity,
+		transaction.Price,
+		transaction.Date,
+	}
+
+	_, err := t.db.Exec(`INSERT INTO transactions (wallet_id, ticker, operation, quantity, price, date) 
+						 VALUES (?, ?, ?, ?, ?, ?)`, data...)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (t *transactionMysql) Update() {
