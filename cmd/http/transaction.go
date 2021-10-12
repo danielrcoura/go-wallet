@@ -65,7 +65,7 @@ func (s *server) storeTransaction(w http.ResponseWriter, r *http.Request) {
 
 	t, err := transactionReqToTransaction(tReq)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		WriteBadRequest(w, err, 0)
 		return
 	}
 
@@ -81,4 +81,38 @@ func (s *server) storeTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
+}
+
+func (s *server) updateTransaction(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	tID, err := strconv.Atoi(vars[TRANSACTION_ID])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var tReq transactionReq
+	if err := decoder.Decode(&tReq); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	t, err := transactionReqToTransaction(tReq)
+	if err != nil {
+		WriteBadRequest(w, err, 0)
+		return
+	}
+
+	if err := s.transactionUsecase.Update(tID, t); err != nil {
+		if strings.HasPrefix(err.Error(), "invalid") {
+			WriteBadRequest(w, err, 0)
+		} else if err.Error() == wcore.ErrTransactionNotFound.Error() {
+			WriteBadRequest(w, wcore.ErrTransactionNotFound, http.StatusNotFound)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		return
+	}
 }

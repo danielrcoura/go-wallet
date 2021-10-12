@@ -46,14 +46,14 @@ type Transaction struct {
 	Operation Operation
 	Quantity  float64
 	Price     float64
-	Date      time.Time
+	Date      *time.Time
 }
 
 type TransactionRepository interface {
 	FetchByWallet(walletID int) ([]Transaction, error)
 	Store(walletID int, transaction Transaction) error
-	Update()
-	Delete()
+	Update(id int, transaction Transaction) error
+	Delete(id int) error
 }
 
 type TransactionUsecase struct {
@@ -103,8 +103,15 @@ func (tu *TransactionUsecase) Store(walletID int, transaction Transaction) error
 	return nil
 }
 
-func (tu *TransactionUsecase) Update() {
-	fmt.Println("transaction_usecase: update")
+func (tu *TransactionUsecase) Update(id int, transaction Transaction) error {
+	// TODO: check if transaction exists
+
+	if err := tu.transactionRepo.Update(id, transaction); err != nil {
+		log.Println(err)
+		return NewDBError(err)
+	}
+
+	return nil
 }
 
 func (tu *TransactionUsecase) Delete() {

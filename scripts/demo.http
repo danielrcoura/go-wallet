@@ -39,6 +39,18 @@ content-type: application/json
     "operation": "sell",
     "quantity": 1.2345,
     "price": 50000,
-    "date": "2014-11-12T11:45:26.371Z"
+    "date": "2014-11-12T10:20:30Z"
+}
+
+### Update transaction
+PATCH http://localhost:3000/wallets/15/transactions/3
+content-type: application/json
+
+{
+    "ticker": "",
+    "operation": "",
+    "quantity": 0,
+    "price": 1,
+    "date": "2015-12-13T12:46:27Z"
 }
 

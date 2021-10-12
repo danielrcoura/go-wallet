@@ -3,6 +3,7 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	wcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 )
@@ -47,10 +48,51 @@ func (t *transactionMysql) Store(walletID int, transaction wcore.Transaction) er
 	return nil
 }
 
-func (t *transactionMysql) Update() {
-	fmt.Println("transaction_repository: update")
+func (t *transactionMysql) Update(id int, transaction wcore.Transaction) error {
+	fields := []string{}
+	data := []interface{}{}
+
+	if transaction.Ticker != "" {
+		data = append(data, transaction.Ticker)
+		fields = append(fields, "ticker")
+	}
+	if transaction.Operation.Check() {
+		data = append(data, transaction.Operation)
+		fields = append(fields, "operation")
+	}
+	if transaction.Quantity > 0 {
+		data = append(data, transaction.Quantity)
+		fields = append(fields, "quantity")
+	}
+	if transaction.Price > 0 {
+		data = append(data, transaction.Price)
+		fields = append(fields, "price")
+	}
+	if transaction.Date != nil {
+		data = append(data, transaction.Date)
+		fields = append(fields, "date")
+	}
+
+	for i, f := range fields {
+		fields[i] = f + "=?"
+	}
+	fieldQuery := strings.Join(fields, ",")
+
+	query := fmt.Sprintf(`UPDATE transactions 
+						  SET %s
+						  WHERE id=?`, fieldQuery)
+	data = append(data, id)
+
+	fmt.Println(query, data)
+	_, err := t.db.Exec(query, data...)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (t *transactionMysql) Delete() {
+func (t *transactionMysql) Delete(id int) error {
 	fmt.Println("transaction_repository: delete")
+	return nil
 }

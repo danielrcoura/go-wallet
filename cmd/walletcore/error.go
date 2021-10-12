@@ -15,6 +15,7 @@ var (
 	ErrInvalidTransactionQuantity  = errors.New("invalid_transaction_quantity")
 	ErrInvalidTransactionPrice     = errors.New("invalid_transaction_price")
 	ErrInvalidTransactionDate      = errors.New("invalid_transaction_date")
+	ErrTransactionNotFound         = errors.New("transaction_not_found")
 )
 
 type dbError struct {
