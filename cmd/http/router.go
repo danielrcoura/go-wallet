@@ -23,7 +23,7 @@ func (s *server) router() *mux.Router {
 	sub.HandleFunc("", s.fetchTransactions).Methods(http.MethodGet)
 	sub.HandleFunc("", s.storeTransaction).Methods(http.MethodPost)
 	sub.HandleFunc(fmt.Sprintf("/{%s}", TRANSACTION_ID), s.updateTransaction).Methods(http.MethodPatch)
-	// sub.HandleFunc("/{id}", s.fetchWallets).Methods(http.MethodDelete)
+	sub.HandleFunc(fmt.Sprintf("/{%s}", TRANSACTION_ID), s.deleteTransaction).Methods(http.MethodDelete)
 
 	return r
 }

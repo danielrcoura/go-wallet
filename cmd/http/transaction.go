@@ -116,3 +116,17 @@ func (s *server) updateTransaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (s *server) deleteTransaction(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	id, err := strconv.Atoi(vars[TRANSACTION_ID])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if err := s.transactionUsecase.Delete(id); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}

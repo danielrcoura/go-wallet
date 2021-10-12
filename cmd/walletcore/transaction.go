@@ -1,7 +1,6 @@
 package wcore
 
 import (
-	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -114,8 +113,12 @@ func (tu *TransactionUsecase) Update(id int, transaction Transaction) error {
 	return nil
 }
 
-func (tu *TransactionUsecase) Delete() {
-	fmt.Println("transaction_usecase: delete")
+func (tu *TransactionUsecase) Delete(id int) error {
+	if err := tu.transactionRepo.Delete(id); err != nil {
+		return NewDBError(err)
+	}
+
+	return nil
 }
 
 func (tu *TransactionUsecase) checkTransaction(t Transaction) (Transaction, error) {

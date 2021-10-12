@@ -93,6 +93,10 @@ func (t *transactionMysql) Update(id int, transaction wcore.Transaction) error {
 }
 
 func (t *transactionMysql) Delete(id int) error {
-	fmt.Println("transaction_repository: delete")
+	_, err := t.db.Exec("DELETE FROM transactions WHERE id=?", id)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -54,3 +54,5 @@ content-type: application/json
     "date": "2015-12-13T12:46:27Z"
 }
 
+### Delete transaction
+DELETE http://localhost:3000/wallets/15/transactions/5
