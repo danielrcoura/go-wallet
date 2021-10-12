@@ -29,6 +29,26 @@ func (t *transactionMysql) FetchByWallet(walletID int) ([]wcore.Transaction, err
 	return RowsToTransactions(r)
 }
 
+func (t *transactionMysql) FetchByID(id int) (*wcore.Transaction, error) {
+	r, err := t.db.Query(`SELECT id, ticker, operation, quantity, price, date
+	                      FROM transactions
+						  WHERE id=?`, id)
+	if err != nil {
+		return nil, err
+	}
+
+	transactions, err := RowsToTransactions(r)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(transactions) == 0 {
+		return nil, nil
+	}
+
+	return &transactions[0], nil
+}
+
 func (t *transactionMysql) Store(walletID int, transaction wcore.Transaction) error {
 	data := []interface{}{
 		walletID,
@@ -83,7 +103,6 @@ func (t *transactionMysql) Update(id int, transaction wcore.Transaction) error {
 						  WHERE id=?`, fieldQuery)
 	data = append(data, id)
 
-	fmt.Println(query, data)
 	_, err := t.db.Exec(query, data...)
 	if err != nil {
 		return err

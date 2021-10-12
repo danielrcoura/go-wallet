@@ -127,6 +127,11 @@ func (s *server) deleteTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := s.transactionUsecase.Delete(id); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		if err.Error() == wcore.ErrTransactionNotFound.Error() {
+			WriteBadRequest(w, wcore.ErrTransactionNotFound, http.StatusNotFound)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		return
 	}
 }

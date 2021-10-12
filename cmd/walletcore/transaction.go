@@ -50,6 +50,7 @@ type Transaction struct {
 
 type TransactionRepository interface {
 	FetchByWallet(walletID int) ([]Transaction, error)
+	FetchByID(id int) (*Transaction, error)
 	Store(walletID int, transaction Transaction) error
 	Update(id int, transaction Transaction) error
 	Delete(id int) error
@@ -82,6 +83,19 @@ func (tu *TransactionUsecase) FetchByWallet(walletID int) ([]Transaction, error)
 	return transactions, nil
 }
 
+func (tu *TransactionUsecase) FetchByID(id int) (*Transaction, error) {
+	t, err := tu.transactionRepo.FetchByID(id)
+	if err != nil {
+		log.Println(err)
+		return nil, NewDBError(err)
+	} else if t == nil {
+		log.Println(ErrTransactionNotFound)
+		return nil, ErrTransactionNotFound
+	}
+
+	return t, nil
+}
+
 func (tu *TransactionUsecase) Store(walletID int, transaction Transaction) error {
 	_, err := tu.walletUsecase.FetchByID(walletID)
 	if err != nil {
@@ -103,7 +117,11 @@ func (tu *TransactionUsecase) Store(walletID int, transaction Transaction) error
 }
 
 func (tu *TransactionUsecase) Update(id int, transaction Transaction) error {
-	// TODO: check if transaction exists
+	_, err := tu.FetchByID(id)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 
 	if err := tu.transactionRepo.Update(id, transaction); err != nil {
 		log.Println(err)
@@ -114,7 +132,14 @@ func (tu *TransactionUsecase) Update(id int, transaction Transaction) error {
 }
 
 func (tu *TransactionUsecase) Delete(id int) error {
+	_, err := tu.FetchByID(id)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
 	if err := tu.transactionRepo.Delete(id); err != nil {
+		log.Println(err)
 		return NewDBError(err)
 	}
 

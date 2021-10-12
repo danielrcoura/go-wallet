@@ -84,6 +84,11 @@ func (wl *WalletUsecase) Update(id int, w Wallet) error {
 	}
 	w.Name = name
 
+	_, err = wl.FetchByID(id)
+	if err != nil {
+		return err
+	}
+
 	exists, err := wl.checkWalletExists(name)
 	if err != nil {
 		log.Println(err)
@@ -93,8 +98,6 @@ func (wl *WalletUsecase) Update(id int, w Wallet) error {
 		return ErrWalletAlreadyExists
 	}
 
-	// TODO: wallet not found
-
 	if err = wl.walletRepo.Update(id, w); err != nil {
 		return NewDBError(err)
 	}
@@ -103,7 +106,10 @@ func (wl *WalletUsecase) Update(id int, w Wallet) error {
 }
 
 func (wl *WalletUsecase) Delete(id int) error {
-	// TODO: wallet not found
+	_, err := wl.FetchByID(id)
+	if err != nil {
+		return err
+	}
 
 	if err := wl.walletRepo.Delete(id); err != nil {
 		log.Println(err)

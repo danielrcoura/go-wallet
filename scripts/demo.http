@@ -55,4 +55,4 @@ content-type: application/json
 }
 
 ### Delete transaction
-DELETE http://localhost:3000/wallets/15/transactions/5
+DELETE http://localhost:3000/wallets/15/transactions/6
