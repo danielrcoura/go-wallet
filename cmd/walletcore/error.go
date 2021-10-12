@@ -9,6 +9,12 @@ var (
 	ErrInvalidWalletName   = errors.New("invalid_wallet_name")
 	ErrWalletAlreadyExists = errors.New("wallet_already_exists")
 	ErrWalletNotFound      = errors.New("wallet_not_found")
+
+	ErrInvalidTransactionTicker    = errors.New("invalid_transaction_ticker")
+	ErrInvalidTransactionOperation = errors.New("invalid_transaction_operation")
+	ErrInvalidTransactionQuantity  = errors.New("invalid_transaction_quantity")
+	ErrInvalidTransactionPrice     = errors.New("invalid_transaction_price")
+	ErrInvalidTransactionDate      = errors.New("invalid_transaction_date")
 )
 
 type dbError struct {

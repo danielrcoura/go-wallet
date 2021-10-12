@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
 	wcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 	"github.com/gorilla/mux"
@@ -69,10 +70,11 @@ func (s *server) storeTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := s.transactionUsecase.Store(wID, t); err != nil {
-		switch err.Error() {
-		case wcore.ErrWalletNotFound.Error():
+		if strings.HasPrefix(err.Error(), "invalid") {
+			WriteBadRequest(w, err, 0)
+		} else if err.Error() == wcore.ErrWalletNotFound.Error() {
 			WriteBadRequest(w, wcore.ErrWalletNotFound, http.StatusNotFound)
-		default:
+		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		return

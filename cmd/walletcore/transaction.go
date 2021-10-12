@@ -3,6 +3,7 @@ package wcore
 import (
 	"fmt"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -22,6 +23,10 @@ func (op Operation) String() string {
 	default:
 		return ""
 	}
+}
+
+func (op Operation) Check() bool {
+	return op == Buy || op == Sell
 }
 
 func StringToOperation(op string) Operation {
@@ -84,7 +89,12 @@ func (tu *TransactionUsecase) Store(walletID int, transaction Transaction) error
 		return err
 	}
 
-	// TODO: validate
+	transaction, err = tu.checkTransaction(transaction)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
 	if err := tu.transactionRepo.Store(walletID, transaction); err != nil {
 		log.Print(err)
 		return NewDBError(err)
@@ -99,4 +109,30 @@ func (tu *TransactionUsecase) Update() {
 
 func (tu *TransactionUsecase) Delete() {
 	fmt.Println("transaction_usecase: delete")
+}
+
+func (tu *TransactionUsecase) checkTransaction(t Transaction) (Transaction, error) {
+	t.Ticker = strings.TrimSpace(t.Ticker)
+
+	if t.Ticker == "" {
+		return t, ErrInvalidTransactionTicker
+	}
+
+	if !t.Operation.Check() {
+		return t, ErrInvalidTransactionOperation
+	}
+
+	if t.Quantity <= 0 {
+		return t, ErrInvalidTransactionQuantity
+	}
+
+	if t.Price <= 0 {
+		return t, ErrInvalidTransactionPrice
+	}
+
+	if !t.Date.Before(time.Now()) && !t.Date.Equal(time.Now()) {
+		return t, ErrInvalidTransactionDate
+	}
+
+	return t, nil
 }
