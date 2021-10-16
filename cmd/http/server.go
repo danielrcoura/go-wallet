@@ -9,15 +9,18 @@ import (
 type server struct {
 	walletUsecase      *wcore.WalletUsecase
 	transactionUsecase *wcore.TransactionUsecase
+	coinUsecase        *wcore.CoinUsecase
 }
 
 func New(
 	walletUsecase *wcore.WalletUsecase,
 	transactionUsecase *wcore.TransactionUsecase,
+	coinUsecase *wcore.CoinUsecase,
 ) *server {
 	return &server{
 		walletUsecase:      walletUsecase,
 		transactionUsecase: transactionUsecase,
+		coinUsecase:        coinUsecase,
 	}
 }
 

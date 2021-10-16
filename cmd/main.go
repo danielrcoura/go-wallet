@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/danielrcoura/go-wallet/cmd/coingecko"
 	http "github.com/danielrcoura/go-wallet/cmd/http"
 	mysql "github.com/danielrcoura/go-wallet/cmd/mysql"
 	wcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
@@ -27,8 +28,15 @@ func main() {
 	transactionMysql := mysql.NewTransactionMysql(db)
 	transactionUsecase := wcore.NewTransactionUsecase(transactionMysql, walletUsecase)
 
+	coinGecko := coingecko.New()
+	coinUsecase := wcore.NewCoinUsecase(coinGecko)
+
 	log.Println("Starting server...")
-	server := http.New(walletUsecase, transactionUsecase)
+	server := http.New(
+		walletUsecase,
+		transactionUsecase,
+		coinUsecase,
+	)
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}

@@ -32,7 +32,26 @@ func NewDBError(err error) dbError {
 	}
 }
 
-func IsdbError(err error) bool {
+func IsDBError(err error) bool {
 	_, ok := err.(dbError)
+	return ok
+}
+
+type coinAPIError struct {
+	err string
+}
+
+func (e coinAPIError) Error() string {
+	return fmt.Sprintf("coin_api_error: %s", e.err)
+}
+
+func NewCoinAPIError(err error) coinAPIError {
+	return coinAPIError{
+		err: err.Error(),
+	}
+}
+
+func IsCoinAPIError(err error) bool {
+	_, ok := err.(coinAPIError)
 	return ok
 }

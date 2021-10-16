@@ -13,6 +13,8 @@ const TRANSACTION_ID = "t_id"
 func (s *server) router() *mux.Router {
 	r := mux.NewRouter()
 
+	r.HandleFunc("/coins", s.getCoins)
+
 	sub := r.PathPrefix("/wallets").Subrouter()
 	sub.HandleFunc("", s.fetchWallets).Methods(http.MethodGet)
 	sub.HandleFunc("", s.storeWallet).Methods(http.MethodPost)

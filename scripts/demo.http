@@ -56,3 +56,8 @@ content-type: application/json
 
 ### Delete transaction
 DELETE http://localhost:3000/wallets/15/transactions/6
+
+# ====================================================
+
+### Get coins
+GET http://localhost:3000/coins
