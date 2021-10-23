@@ -10,7 +10,6 @@ CREATE TABLE IF NOT EXISTS `transactions` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `wallet_id` INT NOT NULL,
   `ticker` VARCHAR(30) NOT NULL,
-  `operation` VARCHAR(4) NOT NULL,
   `quantity` FLOAT NOT NULL,
   `price` FLOAT NOT NULL,
   `date` DATETIME,

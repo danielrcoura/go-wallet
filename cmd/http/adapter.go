@@ -15,11 +15,10 @@ func walletReqToWallet(wReq walletReq) wcore.SimpleWallet {
 
 func transactionReqToTransaction(tReq transactionReq) (wcore.Transaction, error) {
 	t := wcore.Transaction{
-		Ticker:    tReq.Ticker,
-		Operation: wcore.StringToOperation(tReq.Operation),
-		Quantity:  tReq.Quantity,
-		Price:     tReq.Price,
-		Date:      nil,
+		Ticker:   tReq.Ticker,
+		Quantity: tReq.Quantity,
+		Price:    tReq.Price,
+		Date:     nil,
 	}
 
 	if strings.TrimSpace(tReq.Date) != "" {

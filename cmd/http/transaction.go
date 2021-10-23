@@ -10,11 +10,10 @@ import (
 )
 
 type transactionReq struct {
-	Ticker    string  `json:"ticker"`
-	Operation string  `json:"operation"`
-	Quantity  float64 `json:"quantity"`
-	Price     float64 `json:"price"`
-	Date      string  `json:"date"`
+	Ticker   string  `json:"ticker"`
+	Quantity float64 `json:"quantity"`
+	Price    float64 `json:"price"`
+	Date     string  `json:"date"`
 }
 
 func (s *server) fetchTransactions(w http.ResponseWriter, r *http.Request) {

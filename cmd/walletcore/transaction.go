@@ -6,46 +6,12 @@ import (
 	"time"
 )
 
-type Operation int
-
-const (
-	Buy Operation = iota + 1
-	Sell
-)
-
-func (op Operation) String() string {
-	switch op {
-	case Buy:
-		return "buy"
-	case Sell:
-		return "sell"
-	default:
-		return ""
-	}
-}
-
-func (op Operation) Check() bool {
-	return op == Buy || op == Sell
-}
-
-func StringToOperation(op string) Operation {
-	switch op {
-	case Buy.String():
-		return Buy
-	case Sell.String():
-		return Sell
-	default:
-		return 0
-	}
-}
-
 type Transaction struct {
-	ID        int
-	Ticker    string
-	Operation Operation
-	Quantity  float64
-	Price     float64
-	Date      *time.Time
+	ID       int
+	Ticker   string
+	Quantity float64
+	Price    float64
+	Date     *time.Time
 }
 
 type TransactionRepository interface {
@@ -151,14 +117,6 @@ func (tu *TransactionUsecase) checkTransaction(t Transaction) (Transaction, erro
 
 	if t.Ticker == "" {
 		return t, ErrInvalidTransactionTicker
-	}
-
-	if !t.Operation.Check() {
-		return t, ErrInvalidTransactionOperation
-	}
-
-	if t.Quantity <= 0 {
-		return t, ErrInvalidTransactionQuantity
 	}
 
 	if t.Price <= 0 {

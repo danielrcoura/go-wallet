@@ -26,7 +26,7 @@ func RowsToTransactions(r *sql.Rows) ([]wcore.Transaction, error) {
 
 	for r.Next() {
 		t := wcore.Transaction{}
-		err := r.Scan(&t.ID, &t.Ticker, &t.Operation, &t.Quantity, &t.Price, &t.Date)
+		err := r.Scan(&t.ID, &t.Ticker, &t.Quantity, &t.Price, &t.Date)
 		if err != nil {
 			return nil, err
 		}

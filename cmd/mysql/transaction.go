@@ -19,7 +19,7 @@ func NewTransactionMysql(db *sql.DB) *transactionMysql {
 }
 
 func (t *transactionMysql) FetchByWallet(walletID int) ([]wcore.Transaction, error) {
-	r, err := t.db.Query(`SELECT id, ticker, operation, quantity, price, date 
+	r, err := t.db.Query(`SELECT id, ticker, quantity, price, date 
 	                      FROM transactions
 						  WHERE wallet_id=?`, walletID)
 	if err != nil {
@@ -30,7 +30,7 @@ func (t *transactionMysql) FetchByWallet(walletID int) ([]wcore.Transaction, err
 }
 
 func (t *transactionMysql) FetchByID(id int) (*wcore.Transaction, error) {
-	r, err := t.db.Query(`SELECT id, ticker, operation, quantity, price, date
+	r, err := t.db.Query(`SELECT id, ticker, quantity, price, date
 	                      FROM transactions
 						  WHERE id=?`, id)
 	if err != nil {
@@ -53,14 +53,13 @@ func (t *transactionMysql) Store(walletID int, transaction wcore.Transaction) er
 	data := []interface{}{
 		walletID,
 		transaction.Ticker,
-		transaction.Operation,
 		transaction.Quantity,
 		transaction.Price,
 		transaction.Date,
 	}
 
-	_, err := t.db.Exec(`INSERT INTO transactions (wallet_id, ticker, operation, quantity, price, date) 
-						 VALUES (?, ?, ?, ?, ?, ?)`, data...)
+	_, err := t.db.Exec(`INSERT INTO transactions (wallet_id, ticker, quantity, price, date) 
+						 VALUES (?, ?, ?, ?, ?)`, data...)
 	if err != nil {
 		return err
 	}
@@ -75,10 +74,6 @@ func (t *transactionMysql) Update(id int, transaction wcore.Transaction) error {
 	if transaction.Ticker != "" {
 		data = append(data, transaction.Ticker)
 		fields = append(fields, "ticker")
-	}
-	if transaction.Operation.Check() {
-		data = append(data, transaction.Operation)
-		fields = append(fields, "operation")
 	}
 	if transaction.Quantity > 0 {
 		data = append(data, transaction.Quantity)

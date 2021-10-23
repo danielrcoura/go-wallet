@@ -1,7 +1,5 @@
 package wcore
 
-import "fmt"
-
 type CoinSummary struct {
 	TotalQuantity float64
 	AvgPrice      float64
@@ -58,7 +56,6 @@ func (wu *WalletUsecase) summariseWalletTransactions(walletId int) (map[string]*
 	summary := map[string]*CoinSummary{}
 
 	for _, t := range transactions {
-		fmt.Println(t)
 		ts, ok := summary[t.Ticker]
 		if ok {
 			ts.TotalQuantity += t.Quantity
