@@ -14,7 +14,7 @@ type walletReq struct {
 }
 
 func (s *server) fetchWallets(w http.ResponseWriter, r *http.Request) {
-	wallets, err := s.walletUsecase.Fetch()
+	wallets, err := s.walletUsecase.BuildWallets()
 	if err != nil {
 		sendCustomHttpError(w, err)
 		return
@@ -37,7 +37,7 @@ func (s *server) storeWallet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.walletUsecase.Store(wReq.Name); err != nil {
+	if err := s.swalletUsecase.Store(wReq.Name); err != nil {
 		sendCustomHttpError(w, err)
 		return
 	}
@@ -63,7 +63,7 @@ func (s *server) updateWallet(w http.ResponseWriter, r *http.Request) {
 
 	wallet := walletReqToWallet(wReq)
 
-	if err := s.walletUsecase.Update(id, wallet); err != nil {
+	if err := s.swalletUsecase.Update(id, wallet); err != nil {
 		sendCustomHttpError(w, err)
 		return
 	}
@@ -78,7 +78,7 @@ func (s *server) deleteWallet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.walletUsecase.Delete(id); err != nil {
+	if err := s.swalletUsecase.Delete(id); err != nil {
 		sendCustomHttpError(w, err)
 	}
 }

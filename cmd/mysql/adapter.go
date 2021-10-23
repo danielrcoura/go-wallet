@@ -6,11 +6,11 @@ import (
 	wcore "github.com/danielrcoura/go-wallet/cmd/walletcore"
 )
 
-func RowsToWallets(r *sql.Rows) ([]wcore.Wallet, error) {
-	wallets := []wcore.Wallet{}
+func RowsToWallets(r *sql.Rows) ([]wcore.SimpleWallet, error) {
+	wallets := []wcore.SimpleWallet{}
 
 	for r.Next() {
-		w := wcore.Wallet{}
+		w := wcore.SimpleWallet{}
 		err := r.Scan(&w.ID, &w.Name)
 		if err != nil {
 			return nil, err

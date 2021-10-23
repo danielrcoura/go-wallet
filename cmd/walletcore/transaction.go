@@ -58,10 +58,10 @@ type TransactionRepository interface {
 
 type TransactionUsecase struct {
 	transactionRepo TransactionRepository
-	walletUsecase   *WalletUsecase
+	walletUsecase   *SimpleWalletUsecase
 }
 
-func NewTransactionUsecase(t TransactionRepository, w *WalletUsecase) *TransactionUsecase {
+func NewTransactionUsecase(t TransactionRepository, w *SimpleWalletUsecase) *TransactionUsecase {
 	return &TransactionUsecase{
 		transactionRepo: t,
 		walletUsecase:   w,

@@ -16,7 +16,7 @@ func NewWalletMysql(db *sql.DB) *walletMysql {
 	}
 }
 
-func (wl *walletMysql) Fetch() ([]wcore.Wallet, error) {
+func (wl *walletMysql) Fetch() ([]wcore.SimpleWallet, error) {
 	r, err := wl.db.Query("SELECT * FROM wallets")
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func (wl *walletMysql) Fetch() ([]wcore.Wallet, error) {
 	return wallets, nil
 }
 
-func (wl *walletMysql) FetchByID(id int) (*wcore.Wallet, error) {
+func (wl *walletMysql) FetchByID(id int) (*wcore.SimpleWallet, error) {
 	r, err := wl.db.Query("SELECT * FROM wallets WHERE id=?", id)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (wl *walletMysql) FetchByID(id int) (*wcore.Wallet, error) {
 	return &wallets[0], nil
 }
 
-func (wl *walletMysql) FetchByName(name string) (*wcore.Wallet, error) {
+func (wl *walletMysql) FetchByName(name string) (*wcore.SimpleWallet, error) {
 	r, err := wl.db.Query("SELECT * FROM wallets WHERE name=?", name)
 	if err != nil {
 		return nil, err
@@ -75,7 +75,7 @@ func (wl *walletMysql) Store(name string) error {
 	return nil
 }
 
-func (wl *walletMysql) Update(id int, w wcore.Wallet) error {
+func (wl *walletMysql) Update(id int, w wcore.SimpleWallet) error {
 	_, err := wl.db.Exec("UPDATE wallets SET name=? WHERE id=?", w.Name, id)
 	if err != nil {
 		return err

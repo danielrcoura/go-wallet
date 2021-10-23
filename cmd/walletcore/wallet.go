@@ -1,137 +1,73 @@
 package wcore
 
-import (
-	"log"
-	"strings"
-)
+import "fmt"
 
-type Wallet struct {
-	ID   int
-	Name string
+type CoinSummary struct {
+	TotalQuantity float64
+	AvgPrice      float64
 }
 
-type WalletRepository interface {
-	Fetch() ([]Wallet, error)
-	FetchByID(id int) (*Wallet, error)
-	FetchByName(name string) (*Wallet, error)
-	Store(name string) error
-	Update(id int, w Wallet) error
-	Delete(id int) error
+type Wallet struct {
+	Wallet  SimpleWallet
+	Summary map[string]*CoinSummary
 }
 
 type WalletUsecase struct {
-	walletRepo WalletRepository
+	transactionUsecase TransactionUsecase
+	swalletUsecase     SimpleWalletUsecase
 }
 
-func NewWalletUsecase(w WalletRepository) *WalletUsecase {
+func NewWalletUsecase(tu TransactionUsecase, sw SimpleWalletUsecase) *WalletUsecase {
 	return &WalletUsecase{
-		walletRepo: w,
+		transactionUsecase: tu,
+		swalletUsecase:     sw,
 	}
 }
 
-func (wl *WalletUsecase) Fetch() ([]Wallet, error) {
-	wallets, err := wl.walletRepo.Fetch()
+func (wu *WalletUsecase) BuildWallets() ([]*Wallet, error) {
+	swallets, err := wu.swalletUsecase.Fetch()
 	if err != nil {
-		return nil, NewDBError(err)
+		return nil, err
+	}
+
+	wallets := []*Wallet{}
+
+	for _, sw := range swallets {
+		sum, err := wu.summariseWalletTransactions(sw.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		w := Wallet{
+			Wallet:  sw,
+			Summary: sum,
+		}
+
+		wallets = append(wallets, &w)
 	}
 
 	return wallets, nil
 }
 
-func (wl *WalletUsecase) FetchByID(id int) (*Wallet, error) {
-	w, err := wl.walletRepo.FetchByID(id)
+func (wu *WalletUsecase) summariseWalletTransactions(walletId int) (map[string]*CoinSummary, error) {
+	transactions, err := wu.transactionUsecase.FetchByWallet(walletId)
 	if err != nil {
-		log.Println(err)
-		return nil, NewDBError(err)
-	} else if w == nil {
-		log.Println(ErrWalletNotFound)
-		return nil, ErrWalletNotFound
+		return nil, err
 	}
 
-	return w, nil
-}
+	summary := map[string]*CoinSummary{}
 
-func (wl *WalletUsecase) Store(name string) error {
-	log.Printf("Creating wallet %s...\n", name)
-	name, err := wl.handleName(name)
-	if err != nil {
-		log.Println(err)
-		return err
+	for _, t := range transactions {
+		fmt.Println(t)
+		ts, ok := summary[t.Ticker]
+		if ok {
+			ts.TotalQuantity += t.Quantity
+		} else {
+			summary[t.Ticker] = &CoinSummary{
+				TotalQuantity: t.Quantity,
+			}
+		}
 	}
 
-	exists, err := wl.checkWalletExists(name)
-	if err != nil {
-		log.Println(err)
-		return err
-	} else if exists {
-		log.Println(ErrWalletAlreadyExists)
-		return ErrWalletAlreadyExists
-	}
-
-	if err := wl.walletRepo.Store(name); err != nil {
-		log.Println(err)
-		return NewDBError(err)
-	}
-
-	return nil
-}
-
-func (wl *WalletUsecase) Update(id int, w Wallet) error {
-	name, err := wl.handleName(w.Name)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	w.Name = name
-
-	_, err = wl.FetchByID(id)
-	if err != nil {
-		return err
-	}
-
-	exists, err := wl.checkWalletExists(name)
-	if err != nil {
-		log.Println(err)
-		return err
-	} else if exists {
-		log.Println(ErrWalletAlreadyExists)
-		return ErrWalletAlreadyExists
-	}
-
-	if err = wl.walletRepo.Update(id, w); err != nil {
-		return NewDBError(err)
-	}
-
-	return nil
-}
-
-func (wl *WalletUsecase) Delete(id int) error {
-	_, err := wl.FetchByID(id)
-	if err != nil {
-		return err
-	}
-
-	if err := wl.walletRepo.Delete(id); err != nil {
-		log.Println(err)
-		return NewDBError(err)
-	}
-
-	return nil
-}
-
-func (wl *WalletUsecase) handleName(name string) (string, error) {
-	name = strings.TrimSpace(name)
-	if name == "" {
-		return "", ErrInvalidWalletName
-	}
-
-	return name, nil
-}
-
-func (wl *WalletUsecase) checkWalletExists(name string) (bool, error) {
-	w, err := wl.walletRepo.FetchByName(name)
-	if err != nil {
-		return false, NewDBError(err)
-	}
-	return w != nil, nil
+	return summary, nil
 }

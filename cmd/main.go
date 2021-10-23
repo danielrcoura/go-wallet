@@ -23,19 +23,22 @@ func main() {
 	defer db.Close()
 
 	walletMysql := mysql.NewWalletMysql(db)
-	walletUsecase := wcore.NewWalletUsecase(walletMysql)
+	simpleWalletUsecase := wcore.NewSimpleWalletUsecase(walletMysql)
 
 	transactionMysql := mysql.NewTransactionMysql(db)
-	transactionUsecase := wcore.NewTransactionUsecase(transactionMysql, walletUsecase)
+	transactionUsecase := wcore.NewTransactionUsecase(transactionMysql, simpleWalletUsecase)
 
 	coinGecko := coingecko.New()
 	coinUsecase := wcore.NewCoinUsecase(coinGecko)
 
+	walletUsecase := wcore.NewWalletUsecase(*transactionUsecase, *simpleWalletUsecase)
+
 	log.Println("Starting server...")
 	server := http.New(
-		walletUsecase,
+		simpleWalletUsecase,
 		transactionUsecase,
 		coinUsecase,
+		walletUsecase,
 	)
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
