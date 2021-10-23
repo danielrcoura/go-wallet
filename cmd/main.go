@@ -31,7 +31,7 @@ func main() {
 	coinGecko := coingecko.New()
 	coinUsecase := wcore.NewCoinUsecase(coinGecko)
 
-	walletUsecase := wcore.NewWalletUsecase(*transactionUsecase, *simpleWalletUsecase)
+	walletUsecase := wcore.NewWalletUsecase(*transactionUsecase, *simpleWalletUsecase, *coinUsecase)
 
 	log.Println("Starting server...")
 	server := http.New(

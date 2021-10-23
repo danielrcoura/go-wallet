@@ -28,34 +28,32 @@ DELETE http://localhost:3000/wallets/1
 
 
 ### Get transactions
-GET http://localhost:3000/wallets/15/transactions
+GET http://localhost:3000/wallets/1/transactions
 
 ### Create transaction
-POST http://localhost:3000/wallets/15/transactions
+POST http://localhost:3000/wallets/1/transactions
 content-type: application/json
 
 {
-    "ticker": "btc",
-    "operation": "sell",
-    "quantity": 1.2345,
-    "price": 50000,
+    "ticker": "bitcoin",
+    "quantity": 5,
+    "price": 2000,
     "date": "2014-11-12T10:20:30Z"
 }
 
 ### Update transaction
-PATCH http://localhost:3000/wallets/15/transactions/3
+PATCH http://localhost:3000/wallets/1/transactions/3
 content-type: application/json
 
 {
     "ticker": "eth",
-    "operation": "",
     "quantity": 0,
     "price": 0,
     "date": ""
 }
 
 ### Delete transaction
-DELETE http://localhost:3000/wallets/15/transactions/6
+DELETE http://localhost:3000/wallets/1/transactions/6
 
 # ====================================================
 

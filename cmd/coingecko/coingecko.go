@@ -87,7 +87,7 @@ func makeRequest(url string, target interface{}) error {
 		if err != nil {
 			return err
 		}
-		return fmt.Errorf("Status: %v, Error: %v", r.StatusCode, string(body))
+		return fmt.Errorf("status: %v, error: %v", r.StatusCode, string(body))
 	}
 
 	return json.NewDecoder(r.Body).Decode(target)
