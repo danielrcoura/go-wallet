@@ -8,7 +8,7 @@ type CoinSummary struct {
 
 type Wallet struct {
 	Wallet  SimpleWallet
-	Summary map[string]*CoinSummary
+	Summary map[string]CoinSummary
 }
 
 type WalletUsecase struct {
@@ -50,26 +50,21 @@ func (wu *WalletUsecase) BuildWallets() ([]*Wallet, error) {
 	return wallets, nil
 }
 
-func (wu *WalletUsecase) summariseWalletTransactions(walletId int) (map[string]*CoinSummary, error) {
-	transactions, err := wu.transactionUsecase.FetchByWallet(walletId)
+func (wu *WalletUsecase) summariseWalletTransactions(walletId int) (map[string]CoinSummary, error) {
+	transactionsByCoin, err := wu.groupTransactionsByCoin(walletId)
 	if err != nil {
 		return nil, err
 	}
 
-	summary := map[string]*CoinSummary{}
-
-	for _, t := range transactions {
-		ts, ok := summary[t.Ticker]
-		if ok {
-			ts.TotalQuantity += t.Quantity
-		} else {
-			summary[t.Ticker] = &CoinSummary{
-				TotalQuantity: t.Quantity,
-			}
+	summary := map[string]CoinSummary{}
+	for coinId, transactions := range transactionsByCoin {
+		summary[coinId] = CoinSummary{
+			AvgPrice:      wu.calculateAvgPrice(transactions),
+			TotalQuantity: wu.calculateQuantity(transactions),
 		}
 	}
 
-	err = wu.fillPrices(summary)
+	summary, err = wu.fillCurrentPrices(summary)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +72,44 @@ func (wu *WalletUsecase) summariseWalletTransactions(walletId int) (map[string]*
 	return summary, nil
 }
 
-func (wu *WalletUsecase) fillPrices(summary map[string]*CoinSummary) error {
+func (wu *WalletUsecase) calculateQuantity(transactions []Transaction) float64 {
+	qtd := 0.0
+	for _, t := range transactions {
+		qtd += t.Quantity
+	}
+	return qtd
+}
+
+func (wu *WalletUsecase) calculateAvgPrice(transactions []Transaction) float64 {
+	buyPrice := 0.0
+	quantityBuy := 0.0
+
+	for _, t := range transactions {
+		if t.Quantity > 0 {
+			buyPrice += t.Quantity * t.Price
+			quantityBuy += t.Quantity
+		}
+	}
+
+	return buyPrice / quantityBuy
+}
+
+func (wu *WalletUsecase) groupTransactionsByCoin(walletId int) (map[string][]Transaction, error) {
+	transactions, err := wu.transactionUsecase.FetchByWallet(walletId)
+	if err != nil {
+		return nil, err
+	}
+
+	transactionsByCoin := map[string][]Transaction{}
+	for _, t := range transactions {
+		tc := transactionsByCoin[t.Ticker]
+		transactionsByCoin[t.Ticker] = append(tc, t)
+	}
+
+	return transactionsByCoin, nil
+}
+
+func (wu *WalletUsecase) fillCurrentPrices(summary map[string]CoinSummary) (map[string]CoinSummary, error) {
 	tickers := []string{}
 	for ticker := range summary {
 		tickers = append(tickers, ticker)
@@ -85,12 +117,14 @@ func (wu *WalletUsecase) fillPrices(summary map[string]*CoinSummary) error {
 
 	prices, err := wu.coinUsecase.GetPrices(tickers)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	for i, t := range tickers {
-		summary[t].CurrentPrice = prices[i]
+		s := summary[t]
+		s.CurrentPrice = prices[i]
+		summary[t] = s
 	}
 
-	return nil
+	return summary, nil
 }
