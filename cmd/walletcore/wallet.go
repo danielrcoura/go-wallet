@@ -25,6 +25,23 @@ func NewWalletUsecase(tu TransactionUsecase, sw SimpleWalletUsecase, c CoinUseca
 	}
 }
 
+func (wu *WalletUsecase) BuildWallet(id int) (*Wallet, error) {
+	swallet, err := wu.swalletUsecase.FetchByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	sum, err := wu.summariseWalletTransactions(swallet.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Wallet{
+		Wallet:  *swallet,
+		Summary: sum,
+	}, nil
+}
+
 func (wu *WalletUsecase) BuildWallets() ([]*Wallet, error) {
 	swallets, err := wu.swalletUsecase.Fetch()
 	if err != nil {

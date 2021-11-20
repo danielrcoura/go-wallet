@@ -15,3 +15,18 @@ func jsonToCoins(coinsJson []coin) []wcore.Coin {
 
 	return coins
 }
+
+func jsonToCoinRankSummary(coinsRank []coinRankSummary) []*wcore.CoinRankSummary {
+	rank := []*wcore.CoinRankSummary{}
+
+	for _, cr := range coinsRank {
+		rank = append(rank, &wcore.CoinRankSummary{
+			ID:           cr.ID,
+			CurrentPrice: cr.CurrentPrice,
+			MarketCap:    cr.MarketCap,
+			Volume:       cr.Volume,
+		})
+	}
+
+	return rank
+}

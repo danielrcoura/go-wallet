@@ -22,6 +22,13 @@ type coin struct {
 	Symbol string `json:"symbol"`
 }
 
+type coinRankSummary struct {
+	ID           string  `json:"id"`
+	MarketCap    float64 `json:"market_cap"`
+	Volume       float64 `json:"total_volume"`
+	CurrentPrice float64 `json:"current_price"`
+}
+
 type coinGecko struct {
 }
 
@@ -66,6 +73,29 @@ func (cg coinGecko) GetPrices(ids []string) ([]float64, error) {
 	}
 
 	return result, nil
+}
+
+func (cg coinGecko) GetRank(size int, by wcore.MarketProp) ([]*wcore.CoinRankSummary, error) {
+	order := "market_cap_desc"
+	if by == wcore.Volume {
+		order = "volume_desc"
+	}
+
+	url := fmt.Sprintf(
+		"%s/coins/markets?vs_currency=%v&per_page=%v,order=%v",
+		BASE_URL,
+		CURRENCY,
+		size,
+		order,
+	)
+
+	var json []coinRankSummary
+	err := makeRequest(url, &json)
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonToCoinRankSummary(json), nil
 }
 
 func makeRequest(url string, target interface{}) error {

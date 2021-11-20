@@ -33,6 +33,21 @@ func main() {
 
 	walletUsecase := wcore.NewWalletUsecase(*transactionUsecase, *simpleWalletUsecase, *coinUsecase)
 
+	etfUsecase := wcore.NewFundUsecase(coinGecko, *walletUsecase)
+
+	blacklist := []string{
+		"tether",
+		"binance-usd",
+		"usd-coin",
+		"dai",
+		"bitcoin",
+		"ethereum",
+		"ripple",
+		"wrapped-bitcoin",
+		"internet-computer",
+	}
+	etfUsecase.GetFundBalance(blacklist, 20, wcore.MarketCap, 0.1)
+
 	log.Println("Starting server...")
 	server := http.New(
 		simpleWalletUsecase,
