@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/danielrcoura/go-wallet/cmd/coingecko"
@@ -46,7 +47,19 @@ func main() {
 		"wrapped-bitcoin",
 		"internet-computer",
 	}
-	etfUsecase.GetFundBalance(blacklist, 20, wcore.MarketCap, 0.1)
+	goal, err := etfUsecase.GetFundBalance(blacklist, 20, wcore.MarketCap, 0.1)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	r, err := walletUsecase.Rebalance(2, goal, 1000)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for c, v := range r {
+		fmt.Printf("%v %f\n", c, v)
+	}
 
 	log.Println("Starting server...")
 	server := http.New(
